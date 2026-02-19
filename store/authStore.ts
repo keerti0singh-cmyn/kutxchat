@@ -104,6 +104,7 @@ export const useAuthStore = create<AuthState>()(
             throw new Error('Username already taken')
           }
 
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '')
           const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -111,6 +112,7 @@ export const useAuthStore = create<AuthState>()(
               data: {
                 username,
               },
+              emailRedirectTo: `${siteUrl}/login`,
             },
           })
 
@@ -167,8 +169,9 @@ export const useAuthStore = create<AuthState>()(
         const supabase = createClient()
 
         try {
+          const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin
           const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/reset-password`,
+            redirectTo: `${siteUrl}/reset-password`,
           })
 
           if (error) throw error
